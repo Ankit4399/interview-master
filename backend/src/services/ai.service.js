@@ -4,9 +4,14 @@ const { zodToJsonSchema } =  require("zod-to-json-schema");
 const puppeteer = require("puppeteer")
 
 
-const ai = new GoogleGenAI({
-    apiKey: process.env.GOOGLE_GEMINI_API_KEY
-})
+const genAiApiKey =  process.env.GOOGLE_GEMINI_API_KEY || process.env.OPENAI_KEY
+let ai = null
+
+if (!genAiApiKey) {
+    console.warn('⚠️ Gemini API key not found. AI endpoints will return 503, but server continues running.')
+} else {
+    ai = new GoogleGenAI({ apiKey: genAiApiKey })
+}
 
 
 const interviewReportSchema = z.object({
@@ -34,6 +39,13 @@ const interviewReportSchema = z.object({
 })
 
 async function generateInterviewReport({resume,selfDescription,jobDescription}) {
+
+    if (!ai) {
+        const error = new Error('Gemini API key is not configured. Interview report generation is unavailable.')
+        error.statusCode = 503
+        throw error
+    }
+
     // detailed prompt with explicit JSON structure instructions
     const prompt = `Generate a detailed interview report for a candidate. Respond with ONLY valid JSON, nothing else.
 
@@ -86,8 +98,14 @@ IMPORTANT:
 - Include 3-5 technical questions, 2-3 behavioral questions, 2-4 skill gaps, and a 3-5 day preparation plan
 `;
 
+    if (!ai) {
+        const error = new Error('Gemini API key is not configured. Resume PDF generation is unavailable.')
+        error.statusCode = 503
+        throw error
+    }
+
     const response = await ai.models.generateContent({
-        model: "gemini-2.5-flash",
+        model: "gemini-3-flash-preview",
         contents: prompt,
         config: {
             responseMimeType: "application/json",
