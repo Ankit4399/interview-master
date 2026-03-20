@@ -137,23 +137,88 @@ IMPORTANT:
         }
 
         if (Array.isArray(parsed[field])) {
-            parsed[field] = parsed[field].map((item) => {
-                if (typeof item === "string") {
-                    try {
-                        return JSON.parse(item);
-                    } catch (e) {
-                        // trim whitespace and try again with closing brace
+            if (parsed[field].every((item) => typeof item === "string")) {
+                const converted = convertFlatKeyValueArray(field, parsed[field]);
+                if (converted) {
+                    parsed[field] = converted;
+                }
+            } else {
+                parsed[field] = parsed[field].map((item) => {
+                    if (typeof item === "string") {
                         try {
-                            return JSON.parse(item.trim());
-                        } catch (e2) {
-                            return item;
+                            return JSON.parse(item);
+                        } catch (e) {
+                            // trim whitespace and try again with closing brace
+                            try {
+                                return JSON.parse(item.trim());
+                            } catch (e2) {
+                                return item;
+                            }
                         }
                     }
-                }
-                return item;
-            });
+                    return item;
+                });
+            }
         }
     });
+
+    function convertFlatKeyValueArray(field, arr) {
+        const fieldKeyMap = {
+            technicalQuestions: ['question', 'intention', 'answer'],
+            behavioralQuestions: ['question', 'intention', 'answer'],
+            skillGaps: ['skill', 'severity'],
+            preparationPlan: ['day', 'focus', 'tasks'],
+        };
+        const keys = fieldKeyMap[field];
+        if (!keys) return null;
+
+        const result = [];
+        let current = {};
+        let i = 0;
+
+        while (i < arr.length) {
+            const key = arr[i];
+            const value = arr[i + 1];
+            if (typeof key !== 'string' || value === undefined) break;
+
+            if (!keys.includes(key)) {
+                i += 1;
+                continue;
+            }
+
+            if (field === 'preparationPlan' && key === 'day') {
+                if (Object.keys(current).length > 0) {
+                    result.push(current);
+                    current = {};
+                }
+                current.day = Number(value) || 1;
+            } else if (key === 'tasks' && typeof value === 'string') {
+                // tasks string may look like [..] or plain text
+                try {
+                    current.tasks = JSON.parse(value);
+                } catch {
+                    current.tasks = [value];
+                }
+            } else if (key === 'day') {
+                current.day = Number(value) || 1;
+            } else {
+                current[key] = value;
+            }
+
+            if (field !== 'preparationPlan' && key === keys[keys.length - 1]) {
+                result.push(current);
+                current = {};
+            }
+            i += 2;
+        }
+
+        if (Object.keys(current).length > 0) {
+            result.push(current);
+        }
+
+        if (!result.length) return null;
+        return result;
+    }
 
     try {
         parsed = interviewReportSchema.parse(parsed);
