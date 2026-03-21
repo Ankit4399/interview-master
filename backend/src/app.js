@@ -7,8 +7,8 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
-    origin: "http://localhost:5173",
-    credentials: true,
+  origin: "https://interview-master-red.vercel.app",
+  credentials: true
 }))
 
 const authRouter = require('./routes/auth.routes.js')
