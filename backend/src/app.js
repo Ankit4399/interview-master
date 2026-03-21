@@ -11,6 +11,16 @@ app.use(cors({
   credentials: true
 }))
 
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "https://interview-master-red.vercel.app");
+  res.header("Access-Control-Allow-Credentials", "true");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+
+  res.header("Access-Control-Expose-Headers", "Content-Disposition");
+
+  next();
+});
+
 const authRouter = require('./routes/auth.routes.js')
 const interviewRouter = require('./routes/interview.routes.js')
 
