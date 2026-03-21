@@ -10,7 +10,7 @@
 
 * 🔐 **Authentication System**
 
-  * Secure login/signup using JWT & HTTP-only cookies
+  * Secure login/signup using JWT & HTTP-only cookies & Token blacklisting
 
 * 📄 **Resume Parsing**
 
