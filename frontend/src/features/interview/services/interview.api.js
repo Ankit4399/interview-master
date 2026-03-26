@@ -1,7 +1,10 @@
 import axios from "axios";
 
+// Support local development and production
+const baseURL = import.meta.env.VITE_API_URL || "https://interview-master-backend-awq2.onrender.com"
+
 const api = axios.create({
-    baseURL: "https://interview-master-backend-awq2.onrender.com",
+    baseURL: baseURL,
     withCredentials: true,
 })
 

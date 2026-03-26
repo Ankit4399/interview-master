@@ -20,14 +20,15 @@ export const useInterview = () => {
         let response = null
         try {
             response = await generateInterviewReport({ jobDescription, selfDescription, resumeFile })
-            setReport(response.interviewReport)
+            setReport(response?.interviewReport || null)
+            return response?.interviewReport || null
         } catch (error) {
-            console.log(error)
+            console.error("Error generating interview report:", error)
+            setReport(null)
+            return null
         } finally {
             setLoading(false)
         }
-
-        return response.interviewReport
     }
 
     const getReportById = async (interviewId) => {
@@ -35,23 +36,27 @@ export const useInterview = () => {
         let response = null
         try {
             response = await getInterviewReportById(interviewId)
-            setReport(response.interviewReport)
+            setReport(response?.interviewReport || null)
+            return response?.interviewReport || null
         } catch (error) {
-            console.log(error)
+            console.error("Error fetching interview report:", error)
+            setReport(null)
+            return null
         } finally {
             setLoading(false)
         }
-        return response.interviewReport
     }
 
     const getReports = async () => {
         setLoading(true)
         let response = null
         try {
-            response = await getAllInterviewReports()
-            setReports(response.interviewReports)
+             response = await getAllInterviewReports()
+            setReports(response?.interviewReports || [])
         } catch (error) {
-            console.log(error)
+            console.error("Error fetching interview reports:", error)
+            setReports([])
+            return []
         } finally {
             setLoading(false)
         }
