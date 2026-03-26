@@ -8,6 +8,9 @@ const chromium = require("@sparticuz/chromium")
 const genAiApiKey =  process.env.GOOGLE_GEMINI_API_KEY || process.env.OPENAI_KEY
 let ai = null
 
+const REQUIRED_TECHNICAL_QUESTIONS = 5
+const REQUIRED_BEHAVIORAL_QUESTIONS = 5
+
 if (!genAiApiKey) {
     console.warn('⚠️ Gemini API key not found. AI endpoints will return 503, but server continues running.')
 } else {
@@ -21,12 +24,16 @@ const interviewReportSchema = z.object({
         question: z.string().describe("The technical question can be asked in the interview"),
         intention: z.string().describe("The intention of interviewer behind asking this question"),
         answer: z.string().describe("How to answer this question, what points to cover, what approach to take etc.")
-    })).describe("Technical questions that can be asked in the interview along with their intention and how to answer them"),
+    }))
+        .length(REQUIRED_TECHNICAL_QUESTIONS, `technicalQuestions must contain exactly ${REQUIRED_TECHNICAL_QUESTIONS} items`)
+        .describe("Technical questions that can be asked in the interview along with their intention and how to answer them"),
     behavioralQuestions: z.array(z.object({
         question: z.string().describe("The behavioral question can be asked in the interview"),
         intention: z.string().describe("The intention of interviewer behind asking this question"),
         answer: z.string().describe("How to answer this question, what points to cover, what approach to take etc.")
-    })).describe("Behavioral questions that can be asked in the interview along with their intention and how to answer them"),
+    }))
+        .length(REQUIRED_BEHAVIORAL_QUESTIONS, `behavioralQuestions must contain exactly ${REQUIRED_BEHAVIORAL_QUESTIONS} items`)
+        .describe("Behavioral questions that can be asked in the interview along with their intention and how to answer them"),
     skillGaps: z.array(z.object({
         skill: z.string().describe("The skill which the candidate is lacking"),
         severity: z.enum([ "low", "medium", "high" ]).describe("The severity of this skill gap, i.e. how important is this skill for the job and how much it can impact the candidate's chances")
@@ -96,7 +103,8 @@ IMPORTANT:
 - matchScore must be a number between 0 and 100
 - title must be a string
 - DO NOT enumerate items with numeric prefixes; only output JSON data
-- Include 3-5 technical questions, 2-3 behavioral questions, 2-4 skill gaps, and a 3-5 day preparation plan
+- Include exactly ${REQUIRED_TECHNICAL_QUESTIONS} technical questions and exactly ${REQUIRED_BEHAVIORAL_QUESTIONS} behavioral questions
+- Include 2-4 skill gaps and a 3-5 day preparation plan
 `;
 
     if (!ai) {
@@ -241,12 +249,14 @@ async function repairArrays(parsed, {resume,selfDescription,jobDescription}) {
             question: z.string(),
             intention: z.string(),
             answer: z.string(),
-        })),
+        }))
+            .length(REQUIRED_TECHNICAL_QUESTIONS, `technicalQuestions must contain exactly ${REQUIRED_TECHNICAL_QUESTIONS} items`),
         behavioralQuestions: z.array(z.object({
             question: z.string(),
             intention: z.string(),
             answer: z.string(),
-        })),
+        }))
+            .length(REQUIRED_BEHAVIORAL_QUESTIONS, `behavioralQuestions must contain exactly ${REQUIRED_BEHAVIORAL_QUESTIONS} items`),
         skillGaps: z.array(z.object({
             skill: z.string(),
             severity: z.enum(["low","medium","high"]),
@@ -260,7 +270,7 @@ async function repairArrays(parsed, {resume,selfDescription,jobDescription}) {
 
     for (const field of Object.keys(fieldConfigs)) {
         const arr = parsed[field];
-        const valid = Array.isArray(arr) && arr.length && typeof arr[0] === 'object';
+        const valid = fieldConfigs[field].safeParse(arr).success;
         if (!valid) {
             console.warn(`Field ${field} invalid or empty, regenerating separately`);
             try {
@@ -302,6 +312,8 @@ async function generateField(fieldName, schema, {resume,selfDescription,jobDescr
     }
     const fieldPrompt = `Using the candidate details below, produce ONLY a JSON array for "${fieldName}". ` +
         `Each element of the array must exactly match the structure described and contain real text; do not wrap objects in strings or add any surrounding explanation.\n\n` +
+        (fieldName === 'technicalQuestions' ? `Return exactly ${REQUIRED_TECHNICAL_QUESTIONS} items in the array.\n` : '') +
+        (fieldName === 'behavioralQuestions' ? `Return exactly ${REQUIRED_BEHAVIORAL_QUESTIONS} items in the array.\n` : '') +
         `Resume: ${resume}\nSelf Description: ${selfDescription}\nJob Description: ${jobDescription}\n\n` +
         `The JSON array should look like this example (replace the placeholder values):\n` +
         `${example}\n`;
