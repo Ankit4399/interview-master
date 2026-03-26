@@ -11,10 +11,15 @@ export const useAuth = ()=>{
         setLoading(true)
         try {
             const data = await login({ email, password })
-            setUser(data.user)
+            if (data?.user) {
+                setUser(data.user)
+            } else {
+                console.error("No user data returned from login")
+            }
         } catch (err) {
-            console.log(err);
-            
+            const errorMsg = err?.response?.data?.message || err?.message || "Login failed. Please check your connection and try again."
+            console.error("Login error:", errorMsg);
+            alert(errorMsg)
         } finally {
             setLoading(false)
         }
@@ -24,9 +29,15 @@ export const useAuth = ()=>{
         setLoading(true)
         try {
             const data = await register({ username, email, password })
-            setUser(data.user)
+            if (data?.user) {
+                setUser(data.user)
+            } else {
+                console.error("No user data returned from register")
+            }
         } catch (err) {
-            console.log(err);
+            const errorMsg = err?.response?.data?.message || err?.message || "Registration failed. Please check your connection and try again."
+            console.error("Register error:", errorMsg);
+            alert(errorMsg)
         } finally {
             setLoading(false)
         }
@@ -38,7 +49,8 @@ export const useAuth = ()=>{
             await logout()
             setUser(null)
         } catch (err) {
-            console.log(err);
+            const errorMsg = err?.response?.data?.message || err?.message || "Logout failed"
+            console.error("Logout error:", errorMsg);
         } finally {
             setLoading(false)
         }
@@ -48,11 +60,13 @@ export const useAuth = ()=>{
 
         const getAndSetUser = async () => {
             try {
-
                 const data = await getMe()
-                setUser(data.user)
+                if (data?.user) {
+                    setUser(data.user)
+                }
             } catch (err) { 
-                console.log(err);
+                console.warn("User not authenticated or backend unavailable", err?.message);
+                setUser(null)
             } finally {
                 setLoading(false)
             }
