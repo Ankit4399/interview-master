@@ -5,7 +5,7 @@ main.auth-page-wrapper {
   justify-content: center;
   align-items: center;
   position: relative;
-  background-color: var(--dust);
+  background-color: var(--bg-primary);
   overflow: hidden;
   padding: 2rem;
 
@@ -22,13 +22,13 @@ main.auth-page-wrapper {
   }
 
   .auth-glow-1 {
-    background: var(--cherry);
+    background: var(--pink);
     top: -80px;
     left: -80px;
   }
 
   .auth-glow-2 {
-    background: var(--sage);
+    background: var(--border-dark);
     bottom: -80px;
     right: -80px;
   }
@@ -38,10 +38,10 @@ main.auth-page-wrapper {
     z-index: 1;
     width: 100%;
     max-width: 440px;
-    background: var(--petal);
-    border: 1px solid rgba(237, 175, 184, 0.35);
+    background: var(--slate-card);
+    border: 1px solid var(--border-dark);
     border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-lg), 0 0 40px rgba(237, 175, 184, 0.1);
+    box-shadow: var(--shadow-lg), 0 0 40px rgba(250, 112, 154, 0.08);
     padding: 3rem 2.5rem;
     display: flex;
     flex-direction: column;
@@ -61,28 +61,28 @@ main.auth-page-wrapper {
       cursor: pointer;
       text-decoration: none;
 
-      .logo-icon { color: var(--cherry); }
+      .logo-icon { color: var(--pink); }
 
       .logo-text {
         font-family: var(--font-primary);
         font-weight: 800;
         font-size: 1.15rem;
         letter-spacing: -0.01em;
-        color: var(--iron);
+        color: #ffffff;
 
-        .logo-highlight { color: var(--cherry); }
+        .logo-highlight { color: var(--pink); }
       }
     }
 
     h1 {
       font-size: 1.85rem;
-      color: var(--iron);
+      color: #ffffff;
       font-weight: 700;
       letter-spacing: -0.01em;
     }
 
     p {
-      color: var(--iron-muted);
+      color: var(--text-muted);
       font-size: 0.88rem;
       margin-top: 0.4rem;
     }
@@ -104,14 +104,14 @@ main.auth-page-wrapper {
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.06em;
-      color: var(--iron-mid);
+      color: var(--text-muted);
     }
 
     input {
-      border: 1.5px solid var(--border-color);
+      border: 1.5px solid var(--border-dark);
       outline: none;
-      background: rgba(222, 219, 210, 0.4);
-      color: var(--iron);
+      background: var(--dark-bg);
+      color: #ffffff;
       font-size: 0.95rem;
       padding-inline: 1rem;
       padding-block: 0.8rem;
@@ -119,12 +119,12 @@ main.auth-page-wrapper {
       transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
       width: 100%;
 
-      &::placeholder { color: var(--iron-subtle); }
+      &::placeholder { color: var(--text-sub); }
 
       &:focus {
-        border-color: var(--cherry);
-        background: rgba(247, 225, 215, 0.6);
-        box-shadow: 0 0 0 3px rgba(237, 175, 184, 0.18);
+        border-color: var(--pink);
+        background: var(--dark-bg);
+        box-shadow: 0 0 0 3px var(--pink-glow);
       }
     }
   }
@@ -140,17 +140,17 @@ main.auth-page-wrapper {
   .auth-footer-text {
     text-align: center;
     font-size: 0.88rem;
-    color: var(--iron-muted);
+    color: var(--text-muted);
 
     a {
-      color: #a85e66;
+      color: var(--pink);
       text-decoration: none;
       font-weight: 700;
       transition: color 0.2s ease;
       margin-left: 0.25rem;
 
       &:hover {
-        color: var(--cherry);
+        color: var(--pink-light);
         text-decoration: underline;
       }
     }

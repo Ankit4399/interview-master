@@ -77,6 +77,62 @@ const Landing = () => {
                         )}
                     </div>
 
+                    {/* ── Animated Showcase Cards ── */}
+                    <div className="hero-showcase">
+                        {/* Card 1 – Match Score */}
+                        <div className="showcase-card showcase-card--score">
+                            <div className="showcase-card__glow"></div>
+                            <div className="score-ring">
+                                <svg viewBox="0 0 80 80" className="score-ring__svg">
+                                    <circle cx="40" cy="40" r="34" className="score-ring__track" />
+                                    <circle cx="40" cy="40" r="34" className="score-ring__fill" />
+                                </svg>
+                                <span className="score-ring__value">92</span>
+                            </div>
+                            <div className="showcase-card__info">
+                                <span className="showcase-card__title">Match Score</span>
+                                <span className="showcase-card__sub">Resume ↔ Job Fit</span>
+                            </div>
+                        </div>
+
+                        {/* Card 2 – Questions Generated */}
+                        <div className="showcase-card showcase-card--questions">
+                            <div className="showcase-card__glow"></div>
+                            <div className="showcase-card__icon showcase-card__icon--purple">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                                </svg>
+                            </div>
+                            <div className="showcase-card__info">
+                                <span className="showcase-card__number">15</span>
+                                <span className="showcase-card__title">Questions Ready</span>
+                                <span className="showcase-card__sub">Tailored to JD</span>
+                            </div>
+                            <div className="showcase-card__bar">
+                                <div className="showcase-card__bar-fill"></div>
+                            </div>
+                        </div>
+
+                        {/* Card 3 – Resume Status */}
+                        <div className="showcase-card showcase-card--resume">
+                            <div className="showcase-card__glow"></div>
+                            <div className="showcase-card__icon showcase-card__icon--green">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                            </div>
+                            <div className="showcase-card__info">
+                                <span className="showcase-card__title">ATS Optimized</span>
+                                <span className="showcase-card__sub">PDF ready to download</span>
+                            </div>
+                            <div className="showcase-card__tags">
+                                <span className="showcase-tag">React</span>
+                                <span className="showcase-tag">Node.js</span>
+                                <span className="showcase-tag">AWS</span>
+                            </div>
+                        </div>
+                    </div>
+
                     <div className="hero-metrics">
                         <div className="metric">
                             <span className="metric-num">95%</span>

@@ -10,25 +10,25 @@
     transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 
     &.primary-button {
-        background: linear-gradient(135deg, var(--cherry, #EDAFB8), #e0909b);
-        color: #fff;
-        box-shadow: 0 4px 14px rgba(237, 175, 184, 0.4);
+        background: var(--pink, #FA709A);
+        color: var(--dark-bg, #0A0B0E);
+        box-shadow: 0 4px 14px rgba(250, 112, 154, 0.3);
 
         &:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(237, 175, 184, 0.55);
-            background: linear-gradient(135deg, var(--cherry-light, #f4c9cf), var(--cherry, #EDAFB8));
+            box-shadow: 0 6px 20px rgba(250, 112, 154, 0.45);
+            background: var(--pink-light, #ff8fab);
         }
     }
 
     &.secondary-button {
-        background-color: var(--dust, #DEDBD2);
-        color: var(--iron, #4A5759);
-        border: 1.5px solid var(--border-color, #cdc9c0);
+        background-color: var(--slate-card, #13161C);
+        color: #ffffff;
+        border: 1.5px solid var(--border-dark, #222530);
 
         &:hover {
-            background-color: var(--sage-glow, rgba(176,196,177,0.18));
-            border-color: var(--sage, #B0C4B1);
+            background-color: rgba(255, 255, 255, 0.04);
+            border-color: var(--pink, #FA709A);
             transform: translateY(-2px);
         }
     }
