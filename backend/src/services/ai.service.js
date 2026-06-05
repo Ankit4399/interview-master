@@ -1,11 +1,11 @@
-const {GoogleGenAI } = require('@google/genai')
-const {z} = require('zod')
-const { zodToJsonSchema } =  require("zod-to-json-schema");
+const { GoogleGenAI } = require('@google/genai')
+const { z } = require('zod')
+const { zodToJsonSchema } = require("zod-to-json-schema");
 const puppeteer = require("puppeteer-core")
 const chromium = require("@sparticuz/chromium")
 
 
-const genAiApiKey =  process.env.GOOGLE_GEMINI_API_KEY || process.env.OPENAI_KEY
+const genAiApiKey = process.env.GOOGLE_GEMINI_API_KEY || process.env.OPENAI_KEY
 let ai = null
 
 const REQUIRED_TECHNICAL_QUESTIONS = 5
@@ -36,7 +36,7 @@ const interviewReportSchema = z.object({
         .describe("Behavioral questions that can be asked in the interview along with their intention and how to answer them"),
     skillGaps: z.array(z.object({
         skill: z.string().describe("The skill which the candidate is lacking"),
-        severity: z.enum([ "low", "medium", "high" ]).describe("The severity of this skill gap, i.e. how important is this skill for the job and how much it can impact the candidate's chances")
+        severity: z.enum(["low", "medium", "high"]).describe("The severity of this skill gap, i.e. how important is this skill for the job and how much it can impact the candidate's chances")
     })).describe("List of skill gaps in the candidate's profile along with their severity"),
     preparationPlan: z.array(z.object({
         day: z.number().describe("The day number in the preparation plan, starting from 1"),
@@ -46,7 +46,7 @@ const interviewReportSchema = z.object({
     title: z.string().describe("The title of the job for which the interview report is generated"),
 })
 
-async function generateInterviewReport({resume,selfDescription,jobDescription}) {
+async function generateInterviewReport({ resume, selfDescription, jobDescription }) {
 
     if (!ai) {
         const error = new Error('Gemini API key is not configured. Interview report generation is unavailable.')
@@ -234,7 +234,7 @@ IMPORTANT:
     } catch (err) {
         console.error("AI response did not match expected schema:", err.errors, parsed);
         // if arrays are the only problem we can attempt to regenerate them one by one
-        await repairArrays(parsed, {resume,selfDescription,jobDescription});
+        await repairArrays(parsed, { resume, selfDescription, jobDescription });
         // validate again after repair
         parsed = interviewReportSchema.parse(parsed);
     }
@@ -243,7 +243,7 @@ IMPORTANT:
 }
 
 // helper to regenerate individual array fields when they fail
-async function repairArrays(parsed, {resume,selfDescription,jobDescription}) {
+async function repairArrays(parsed, { resume, selfDescription, jobDescription }) {
     const fieldConfigs = {
         technicalQuestions: z.array(z.object({
             question: z.string(),
@@ -259,7 +259,7 @@ async function repairArrays(parsed, {resume,selfDescription,jobDescription}) {
             .length(REQUIRED_BEHAVIORAL_QUESTIONS, `behavioralQuestions must contain exactly ${REQUIRED_BEHAVIORAL_QUESTIONS} items`),
         skillGaps: z.array(z.object({
             skill: z.string(),
-            severity: z.enum(["low","medium","high"]),
+            severity: z.enum(["low", "medium", "high"]),
         })),
         preparationPlan: z.array(z.object({
             day: z.number(),
@@ -274,7 +274,7 @@ async function repairArrays(parsed, {resume,selfDescription,jobDescription}) {
         if (!valid) {
             console.warn(`Field ${field} invalid or empty, regenerating separately`);
             try {
-                parsed[field] = await generateField(field, fieldConfigs[field], {resume,selfDescription,jobDescription});
+                parsed[field] = await generateField(field, fieldConfigs[field], { resume, selfDescription, jobDescription });
             } catch (e) {
                 console.error(`Failed to regenerate ${field}:`, e);
                 parsed[field] = [];
@@ -283,7 +283,7 @@ async function repairArrays(parsed, {resume,selfDescription,jobDescription}) {
     }
 }
 // helper to regenerate a specific array field with a focused prompt
-async function generateField(fieldName, schema, {resume,selfDescription,jobDescription}) {
+async function generateField(fieldName, schema, { resume, selfDescription, jobDescription }) {
     // provide a simple hard‑coded example depending on field
     let example;
     switch (fieldName) {
@@ -353,12 +353,52 @@ async function generateField(fieldName, schema, {resume,selfDescription,jobDescr
 
 
 async function generatePdfFromHtml(htmlContent) {
-    const browser = await puppeteer.launch({
-        args: chromium.args,
-        defaultViewport: chromium.defaultViewport,
-        executablePath: await chromium.executablePath(),
-        headless: chromium.headless,
-    })
+    const fs = require('fs');
+    const path = require('path');
+
+    let launchArgs = {};
+
+    if (process.platform === 'win32') {
+        const chromePaths = [
+            'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+            'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
+            path.join(process.env.LOCALAPPDATA || '', 'Google\\Chrome\\Application\\chrome.exe'),
+            'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe',
+            'C:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe'
+        ];
+
+        let foundPath = null;
+        for (const p of chromePaths) {
+            if (fs.existsSync(p)) {
+                foundPath = p;
+                break;
+            }
+        }
+
+        if (foundPath) {
+            launchArgs = {
+                executablePath: foundPath,
+                headless: true,
+                args: ['--no-sandbox', '--disable-setuid-sandbox']
+            };
+        } else {
+            launchArgs = {
+                args: chromium.args,
+                defaultViewport: chromium.defaultViewport,
+                executablePath: await chromium.executablePath(),
+                headless: chromium.headless,
+            };
+        }
+    } else {
+        launchArgs = {
+            args: chromium.args,
+            defaultViewport: chromium.defaultViewport,
+            executablePath: await chromium.executablePath(),
+            headless: chromium.headless,
+        };
+    }
+
+    const browser = await puppeteer.launch(launchArgs)
 
     const page = await browser.newPage()
     await page.setContent(htmlContent, { waitUntil: "networkidle0" })

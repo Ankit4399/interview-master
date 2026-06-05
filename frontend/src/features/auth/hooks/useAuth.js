@@ -1,25 +1,28 @@
 import { useContext, useEffect } from "react";
 import { AuthContext } from "../auth.context.jsx";
-import { login ,register,logout,getMe} from "../services/auth.api"
+import { login, register, logout, getMe } from "../services/auth.api"
 
-export const useAuth = ()=>{
+export const useAuth = () => {
     const context = useContext(AuthContext)
 
     const { user, setUser, loading, setLoading } = context
 
-     const handleLogin = async ({ email, password }) => {
+    const handleLogin = async ({ email, password }) => {
         setLoading(true)
         try {
             const data = await login({ email, password })
             if (data?.user) {
                 setUser(data.user)
+                return true
             } else {
                 console.error("No user data returned from login")
+                return false
             }
         } catch (err) {
             const errorMsg = err?.response?.data?.message || err?.message || "Login failed. Please check your connection and try again."
             console.error("Login error:", errorMsg);
             alert(errorMsg)
+            return false
         } finally {
             setLoading(false)
         }
@@ -31,13 +34,16 @@ export const useAuth = ()=>{
             const data = await register({ username, email, password })
             if (data?.user) {
                 setUser(data.user)
+                return true
             } else {
                 console.error("No user data returned from register")
+                return false
             }
         } catch (err) {
             const errorMsg = err?.response?.data?.message || err?.message || "Registration failed. Please check your connection and try again."
             console.error("Register error:", errorMsg);
             alert(errorMsg)
+            return false
         } finally {
             setLoading(false)
         }
@@ -64,7 +70,7 @@ export const useAuth = ()=>{
                 if (data?.user) {
                     setUser(data.user)
                 }
-            } catch (err) { 
+            } catch (err) {
                 console.warn("User not authenticated or backend unavailable", err?.message);
                 setUser(null)
             } finally {

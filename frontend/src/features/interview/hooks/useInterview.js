@@ -51,7 +51,7 @@ export const useInterview = () => {
         setLoading(true)
         let response = null
         try {
-             response = await getAllInterviewReports()
+            response = await getAllInterviewReports()
             setReports(response?.interviewReports || [])
         } catch (error) {
             console.error("Error fetching interview reports:", error)
@@ -65,23 +65,23 @@ export const useInterview = () => {
     }
 
     const getResumePdf = async (interviewReportId) => {
-    setLoading(true)
-    try {
-        const response = await generateResumePdf({ interviewReportId })
+        setLoading(true)
+        try {
+            const response = await generateResumePdf({ interviewReportId })
 
-        const url = window.URL.createObjectURL(response)
+            const url = window.URL.createObjectURL(response)
 
-        const link = document.createElement("a")
-        link.href = url
-        link.setAttribute("download", `resume_${interviewReportId}.pdf`)
-        document.body.appendChild(link)
-        link.click()
-    } catch (error) {
-        console.log(error)
-    } finally {
-        setLoading(false)
+            const link = document.createElement("a")
+            link.href = url
+            link.setAttribute("download", `resume_${interviewReportId}.pdf`)
+            document.body.appendChild(link)
+            link.click()
+        } catch (error) {
+            console.log(error)
+        } finally {
+            setLoading(false)
+        }
     }
-}
 
     useEffect(() => {
         if (interviewId) {
@@ -89,7 +89,7 @@ export const useInterview = () => {
         } else {
             getReports()
         }
-    }, [ interviewId ])
+    }, [interviewId])
 
     return { loading, report, reports, generateReport, getReportById, getReports, getResumePdf }
 

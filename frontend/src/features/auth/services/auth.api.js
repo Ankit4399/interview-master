@@ -1,14 +1,16 @@
 import axios from "axios";
 
+const baseURL = import.meta.env.VITE_API_URL || "https://interview-master-backend-awq2.onrender.com"
+
 const api = axios.create({
-    baseURL:"https://interview-master-backend-awq2.onrender.com",
+    baseURL: baseURL,
     withCredentials: true,
 })
 
-export async function register({username,email,password}){
+export async function register({ username, email, password }) {
     try {
-        const response = await api.post("/api/auth/register",{
-            username,email,password
+        const response = await api.post("/api/auth/register", {
+            username, email, password
         })
         return response.data;
     } catch (err) {
@@ -17,10 +19,10 @@ export async function register({username,email,password}){
     }
 }
 
-export async function login({email , password}){
+export async function login({ email, password }) {
     try {
-        const response  = await api.post("/api/auth/login",{
-            email,password
+        const response = await api.post("/api/auth/login", {
+            email, password
         })
         return response.data;
     } catch (err) {
@@ -29,9 +31,9 @@ export async function login({email , password}){
     }
 }
 
-export async function logout(){
+export async function logout() {
     try {
-        const response  = await api.get("/api/auth/logout")
+        const response = await api.get("/api/auth/logout")
         return response.data;
     } catch (err) {
         console.error("Logout error:", err);
@@ -39,9 +41,9 @@ export async function logout(){
     }
 }
 
-export async function getMe(){
+export async function getMe() {
     try {
-        const response  = await api.get("/api/auth/get-me")
+        const response = await api.get("/api/auth/get-me")
         return response.data;
     } catch (err) {
         console.error("GetMe error:", err);
