@@ -64,13 +64,6 @@
 
 ---
 
-## 🌐 Live Demo
-
-* 🔗 Frontend: https://interview-master-red.vercel.app
-* 🔗 Backend: https://interview-master-backend-awq2.onrender.com
-
----
-
 ## ⚙️ Installation & Setup
 
 ### 1️⃣ Clone Repository
